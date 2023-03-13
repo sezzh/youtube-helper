@@ -3,11 +3,12 @@ import sys
 import os
 import pathlib
 
-MUSIC_COMMAND = f'youtube-dl -f bestaudio --extract-audio --audio-quality 0 --audio-format aac --output "./music_downloaded/%(title)s.%(ext)s"'
+MUSIC_COMMAND_AAC = f'youtube-dl -f bestaudio --extract-audio --audio-quality 0 --audio-format aac --output "./music_downloaded/%(title)s.%(ext)s"'
+MUSIC_COMMAND_MP3 = f'youtube-dl -f bestaudio --extract-audio --audio-quality 0 --audio-format mp3 --output "./music_downloaded_mp3/%(title)s.%(ext)s"'
 
-def download_song(song_url, file_error_instance):
+def download_song(command, song_url, file_error_instance):
     print(f"downloading: {song_url}")
-    music_command_to_execute = f'{MUSIC_COMMAND} "{song_url}"'
+    music_command_to_execute = f'{command} "{song_url}"'
     print("command to use:")
     print(music_command_to_execute)
     process = subprocess.Popen(music_command_to_execute, shell=True, stdout=subprocess.PIPE)
@@ -40,7 +41,8 @@ for line_url_song in readlines_of_music_file:
 index = 1
 for song_url in list_of_songs_to_download:
     print(f"downloading song: {index}/{len(list_of_songs_to_download)}")
-    download_song(song_url, file_error_instance)
+    download_song(MUSIC_COMMAND_AAC, song_url, file_error_instance)
+    download_song(MUSIC_COMMAND_MP3, song_url, file_error_instance)
     index = index + 1
 
 
