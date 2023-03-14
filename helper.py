@@ -1,21 +1,24 @@
-import subprocess
 import sys
 import os
 import pathlib
 
-MUSIC_COMMAND_AAC = f'youtube-dl -f bestaudio --extract-audio --audio-quality 0 --audio-format aac --output "./music_downloaded/%(title)s.%(ext)s"'
-MUSIC_COMMAND_MP3 = f'youtube-dl -f bestaudio --extract-audio --audio-quality 0 --audio-format mp3 --output "./music_downloaded_mp3/%(title)s.%(ext)s"'
+from delta import dealing_deltas, clean_delta_extension, delete_deltas, copy_deltas_to_library
+from util import download_song, init_configuration, clean_workspace
 
-def download_song(command, song_url, file_error_instance):
-    print(f"downloading: {song_url}")
-    music_command_to_execute = f'{command} "{song_url}"'
-    print("command to use:")
-    print(music_command_to_execute)
-    process = subprocess.Popen(music_command_to_execute, shell=True, stdout=subprocess.PIPE)
-    process.wait()
-    if process.returncode == 1:
-        file_error_instance.write(f'{song_url}\n')
+init_configuration()
 
+AAC = "aac"
+MP3 = "mp3"
+
+FOLDER_ACC = "music_downloaded"
+FOLDER_MP3 = f"music_downloaded_{MP3}"
+DELTA_FOLDER_AAC = f"delta_{AAC}"
+DELTA_FOLDER_MP3 = f"delta_{MP3}"
+
+MUSIC_COMMAND_AAC = f'youtube-dl -f bestaudio --extract-audio --audio-quality 0 --audio-format aac --output "./{DELTA_FOLDER_AAC}/%(title)s.%(ext)s"'
+MUSIC_COMMAND_MP3 = f'youtube-dl -f bestaudio --extract-audio --audio-quality 0 --audio-format mp3 --output "./{DELTA_FOLDER_MP3}/%(title)s.%(ext)s"'
+COPY_DELTA_COMMAND_AAC = f"cp ./{DELTA_FOLDER_AAC}/* ./{FOLDER_ACC}"
+COPY_DELTA_COMMAND_MP3 = f"cp ./{DELTA_FOLDER_MP3}/* ./{FOLDER_MP3}"
 
 current_path = pathlib.Path(os.getcwd())
 music_file_name = sys.argv[1]
@@ -44,7 +47,23 @@ for song_url in list_of_songs_to_download:
     download_song(MUSIC_COMMAND_AAC, song_url, file_error_instance)
     download_song(MUSIC_COMMAND_MP3, song_url, file_error_instance)
     index = index + 1
+# now we need to deal with deltas
+list_of_repeated_deltas = dealing_deltas(DELTA_FOLDER_AAC, FOLDER_ACC)
+
+list_of_cleaned_repeated_deltas = clean_delta_extension(list_of_repeated_deltas)
+
+print("deltas to be deleted:")
+for repeated_delta in list_of_cleaned_repeated_deltas:
+    print(repeated_delta)
+
+delete_deltas(list_of_cleaned_repeated_deltas, AAC)
+delete_deltas(list_of_cleaned_repeated_deltas, MP3)
+
+copy_deltas_to_library(COPY_DELTA_COMMAND_AAC)
+copy_deltas_to_library(COPY_DELTA_COMMAND_MP3)
 
 
 file_error_instance.close()
 file_music_list_instance.close()
+
+clean_workspace()
