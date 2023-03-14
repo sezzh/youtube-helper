@@ -1,5 +1,6 @@
 import os
 import pathlib
+import subprocess
 
 def dealing_deltas(delta_folder, music_folder):
     list_of_delta_names = []
@@ -29,6 +30,19 @@ def clean_delta_extension(delta_founds):
         splitted_delta = delta.rsplit('.', 1)
         delta_founds_with_no_ext.append(splitted_delta[0])
     return delta_founds_with_no_ext
+
+def delete_deltas(delta_list, delta_extension):
+    for delta in delta_list:
+        delete_delta(f"{delta}.{delta_extension}", f"delta_{delta_extension}")
+
+def delete_delta(delta_name, delta_folder):
+    delta_file_path = pathlib.Path(os.getcwd).joinpath(delta_folder, delta_name)
+    delta_file_path.unlink()
+
+def copy_deltas_to_library(copy_command):
+    process = subprocess.Popen(copy_command, shell=True, stdout=subprocess.PIPE)
+    process.wait()
+
 
 delta_list = dealing_deltas("delta_aac", "music_downloaded")
 delta_clean_list = clean_delta_extension(delta_list)

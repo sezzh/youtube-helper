@@ -1,6 +1,12 @@
 /.vscode
+/.code-notes
 
+/music_downloaded-backup
 /music_downloaded
 /music_downloaded_mp3
+/music_downloaded_mp3_already_in_watch
+/delta_aac
+/delta_mp3
+
 music_not_downloaded.txt
 next_music_download.txt
