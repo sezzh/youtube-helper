@@ -52,6 +52,10 @@ list_of_repeated_deltas = dealing_deltas(DELTA_FOLDER_AAC, FOLDER_ACC)
 
 list_of_cleaned_repeated_deltas = clean_delta_extension(list_of_repeated_deltas)
 
+print("deltas to be deleted:")
+for repeated_delta in list_of_cleaned_repeated_deltas:
+    print(repeated_delta)
+
 delete_deltas(list_of_cleaned_repeated_deltas, AAC)
 delete_deltas(list_of_cleaned_repeated_deltas, MP3)
 

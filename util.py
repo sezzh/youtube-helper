@@ -19,5 +19,5 @@ def download_song(command, song_url, file_error_instance):
 
 def clean_workspace():
     current_path = pathlib.Path(os.getcwd())
-    pathlib.Path(current_path.joinpath("delta_aac")).unlink()
-    pathlib.Path(current_path.joinpath("delta_mp3")).unlink()
+    pathlib.Path(current_path.joinpath("delta_aac")).rmdir()
+    pathlib.Path(current_path.joinpath("delta_mp3")).rmdir()
