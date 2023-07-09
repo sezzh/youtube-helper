@@ -2,23 +2,29 @@ import sys
 import os
 import pathlib
 
-from delta import dealing_deltas, clean_delta_extension, delete_deltas, copy_deltas_to_library
-from util import download_song, init_configuration, clean_workspace
+from delta import dealing_deltas, clean_delta_extension, delete_deltas 
+from util import download_song, init_configuration, clean_workspace, execute_command
 
-init_configuration()
+
 
 AAC = "aac"
 MP3 = "mp3"
 
 FOLDER_ACC = "music_downloaded"
 FOLDER_MP3 = f"music_downloaded_{MP3}"
+FOLDER_LATEST_DOWNLOAD_AAC=f"music_latest_downloaded_{AAC}"
 DELTA_FOLDER_AAC = f"delta_{AAC}"
 DELTA_FOLDER_MP3 = f"delta_{MP3}"
+COMMAND_APP = "yt-dlp"
 
-MUSIC_COMMAND_AAC = f'youtube-dl -f bestaudio --extract-audio --audio-quality 0 --audio-format aac --output "./{DELTA_FOLDER_AAC}/%(title)s.%(ext)s"'
-MUSIC_COMMAND_MP3 = f'youtube-dl -f bestaudio --extract-audio --audio-quality 0 --audio-format mp3 --output "./{DELTA_FOLDER_MP3}/%(title)s.%(ext)s"'
+MUSIC_COMMAND_AAC = f'{COMMAND_APP} -f bestaudio --extract-audio --audio-quality 0 --audio-format aac --output "./{DELTA_FOLDER_AAC}/%(title)s.%(ext)s"'
+MUSIC_COMMAND_MP3 = f'{COMMAND_APP} -f bestaudio --extract-audio --audio-quality 0 --audio-format mp3 --output "./{DELTA_FOLDER_MP3}/%(title)s.%(ext)s"'
 COPY_DELTA_COMMAND_AAC = f"cp ./{DELTA_FOLDER_AAC}/* ./{FOLDER_ACC}"
 COPY_DELTA_COMMAND_MP3 = f"cp ./{DELTA_FOLDER_MP3}/* ./{FOLDER_MP3}"
+
+COPY_DELTA_TO_LATEST_COMMAND_AAC = f"cp ./{DELTA_FOLDER_AAC}/* ./{FOLDER_LATEST_DOWNLOAD_AAC}"
+
+init_configuration(FOLDER_LATEST_DOWNLOAD_AAC)
 
 current_path = pathlib.Path(os.getcwd())
 music_file_name = sys.argv[1]
@@ -59,8 +65,9 @@ for repeated_delta in list_of_cleaned_repeated_deltas:
 delete_deltas(list_of_cleaned_repeated_deltas, AAC)
 delete_deltas(list_of_cleaned_repeated_deltas, MP3)
 
-copy_deltas_to_library(COPY_DELTA_COMMAND_AAC)
-copy_deltas_to_library(COPY_DELTA_COMMAND_MP3)
+execute_command(COPY_DELTA_COMMAND_AAC)
+execute_command(COPY_DELTA_COMMAND_MP3)
+execute_command(COPY_DELTA_TO_LATEST_COMMAND_AAC)
 
 
 file_error_instance.close()
